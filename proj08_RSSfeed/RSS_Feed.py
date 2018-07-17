@@ -6,7 +6,7 @@ import string
 import time
 from project_util import translate_html
 from news_gui import Popup
-
+import string
 #-----------------------------------------------------------------------
 #
 # proj08: RSS Feed Filter
@@ -57,19 +57,22 @@ class NewsStory(object):
         * summary
         * link
     """
-    def __init__(self, guid):
-        """
-        Returns a NewsStory object with the following attributes
-        :param guid: a string that serves as a unique name for this entry 
-        :param title: string
-        :param subject: string
-        :param summary: string
-        :param link: string     
-        """
+    def __init__(self, guid,title,subject,summary,link):
         self.guid = guid
-
+        self.title=title
+        self.subject=subject
+        self.summary=summary
+        self.link=link
     def get_guid(self):
         return self.guid
+    def get_title(self):
+        return self.title
+    def get_subject(self):
+        return self.subject
+    def get_summary(self):
+        return self.summary
+    def get_link(self):
+        return self.link
 
 # Your job is to write functions for the other 4 attributes.
 
@@ -105,11 +108,20 @@ class Trigger(object):
 # and it will return True if the word is in the text, False otherwise. This method
 # should not be case sensitive.
 
+class WordTrigger(Trigger):
+    def __init__(self,word):
+        self.word=word
 
-
-
-
-
+    def is_word_in(self,s):
+        self.word.lower()
+        s.lower()
+        for item in s.punctuation:
+            s.replace(item," ")
+        s.split(" ")
+        for thing in s:
+            if thing == self.word:
+                return True
+        return False
 
 
 
@@ -123,6 +135,18 @@ class Trigger(object):
 # TODO: TitleTrigger
 # TODO: SubjectTrigger
 # TODO: SummaryTrigger
+class TitleTrigger(WordTrigger):
+    def evaluate(self,story):
+        return self.is_word_in(story.get_title())
+
+class SubjectTrigger(WordTrigger):
+    def evaluate(self,story):
+        return self.is_word_in(story.get_subject())
+
+class SummaryTrigger(WordTrigger):
+    def evaluate(self,story):
+        return self.is_word_in(story.get_summary())
+
 
 
 # Composite Triggers
