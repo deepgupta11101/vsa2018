@@ -113,15 +113,17 @@ class WordTrigger(Trigger):
         self.word=word
 
     def is_word_in(self,s):
-        self.word.lower()
-        s.lower()
-        for item in s.punctuation:
-            s.replace(item," ")
-        s.split(" ")
+        ret = False
+        self.word=self.word.lower()
+        s=s.lower()
+        for item in string.punctuation:
+            s=s.replace(item," ")
+        s=s.split(" ")
         for thing in s:
             if thing == self.word:
-                return True
-        return False
+                ret = True
+                return ret
+        return ret
 
 
 
@@ -159,11 +161,33 @@ class SummaryTrigger(WordTrigger):
 # TODO: NotTrigger
 # TODO: AndTrigger
 # TODO: OrTrigger
+class NotTrigger(Trigger):
+    def __init__(self,x):
+        self.trigger = x
 
+    def evaluate(self, story):
+        return not self.trigger.evaluate(story)
 
+class AndTrigger(Trigger):
+    def __init__(self,x,y):
+        self.trigger1 = x
+        self.trigger2 = y
+    def evaluate(self,story):
+        return self.trigger1.evaluate(story) and self.trigger2.evaluate(story)
+
+class OrTrigger(Trigger):
+    def __init__(self,x,y):
+        self.trigger1 = x
+        self.trigger2 = y
+    def evaluate(self,story):
+        return self.trigger1.evaluate(story) or self.trigger2.evaluate(story)
 # Phrase Trigger
 # Question 9
-
+class PhraseTrigger(Trigger):
+    def __init__(self,phrase):
+        self.phrase = phrase
+    def evaluate(self,story):
+        return str(self.phrase) in story.get_subject() or str(self.phrase) in story.get_title() or str(self.phrase) in story.get_summary()
 # This is also a subclass of Trigger, so it will need a constructor and an evaluate
 # method.
 # TODO: PhraseTrigger
@@ -183,6 +207,19 @@ def filter_stories(stories, triggerlist):
     # TODO: Problem 10
     # This is a placeholder (we're just returning all the stories, with no filtering) 
     # Feel free to change this line!
+    for story in stories:
+        for t in triggerlist:
+            copy = str(t)
+            if copy.count(" ")>0:
+                test  = PhraseTrigger(t)
+                if test.evaluate(story)==False:
+                    stories.remove(story)
+            else:
+                test1 = TitleTrigger(t)
+                test2 = SubjectTrigger(t)
+                test3 = SummaryTrigger(t)
+                if test1.evaluate(story)==test2.evaluate(story)==test3.evaluate(story)==False:
+                    stories.remove(story)
     return stories
 
 #======================
