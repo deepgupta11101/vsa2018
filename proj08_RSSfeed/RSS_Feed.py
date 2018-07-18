@@ -207,20 +207,21 @@ def filter_stories(stories, triggerlist):
     # TODO: Problem 10
     # This is a placeholder (we're just returning all the stories, with no filtering) 
     # Feel free to change this line!
+    ret = []
     for story in stories:
         for t in triggerlist:
             copy = str(t)
             if copy.count(" ")>0:
                 test  = PhraseTrigger(t)
-                if test.evaluate(story)==False:
-                    stories.remove(story)
+                if test.evaluate(story)==True and story not in ret:
+                    ret.append(story)
             else:
                 test1 = TitleTrigger(t)
                 test2 = SubjectTrigger(t)
                 test3 = SummaryTrigger(t)
-                if test1.evaluate(story)==test2.evaluate(story)==test3.evaluate(story)==False:
-                    stories.remove(story)
-    return stories
+                if test1.evaluate(story)==True or test2.evaluate(story)==True or test3.evaluate(story)==True and story not in ret:
+                    ret.append(story)
+    return ret
 
 #======================
 # Extensions: Part 4
