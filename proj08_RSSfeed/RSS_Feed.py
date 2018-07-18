@@ -208,19 +208,12 @@ def filter_stories(stories, triggerlist):
     # This is a placeholder (we're just returning all the stories, with no filtering) 
     # Feel free to change this line!
     ret = []
-    for story in stories:
-        for t in triggerlist:
-            copy = str(t)
-            if copy.count(" ")>0:
-                test  = PhraseTrigger(t)
-                if test.evaluate(story)==True and story not in ret:
-                    ret.append(story)
-            else:
-                test1 = TitleTrigger(t)
-                test2 = SubjectTrigger(t)
-                test3 = SummaryTrigger(t)
-                if test1.evaluate(story)==True or test2.evaluate(story)==True or test3.evaluate(story)==True and story not in ret:
-                    ret.append(story)
+    count = 0
+    for trigger in triggerlist:
+        for story in stories:
+            if trigger.evaluate(story)==True and story not in ret and count<34:
+                ret.append(story)
+                count+=1
     return ret
 
 #======================
@@ -240,10 +233,19 @@ def readTriggerConfig(filename):
     triggerfile = open(filename, "r")
     all = [ line.rstrip() for line in triggerfile.readlines() ]
     lines = []
+    ret = []
     for line in all:
         if len(line) == 0 or line[0] == '#':
             continue
         lines.append(line)
+    counter = 0
+    for line in lines:
+        if "ADD" in line:
+            lines[counter].lstrip("ADD ")
+            while len(line)>0:
+                counter+=1
+    print lines
+readTriggerConfig("triggers.txt")
 
     # TODO: Problem 11
     # 'lines' has a list of lines you need to parse
@@ -260,6 +262,7 @@ def main_thread(p):
     t3 = PhraseTrigger("Net Neutrality")
     t4 = OrTrigger(t2, t3)
     triggerlist = [t1, t4]
+
     
     # TODO: Problem 11
     # After implementing readTriggerConfig, uncomment this line 
