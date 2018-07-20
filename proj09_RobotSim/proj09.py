@@ -10,7 +10,6 @@ import random
 
 
 # === Provided classes
-
 class Position(object):
     """
     A Position represents a location in a two-dimensional room.
@@ -88,10 +87,11 @@ class RectangularRoom(object):
         """
         x = int(pos.getX())
         y = int(pos.getY())
+        counter = 0
         for item in self.floor:
             if item[0]==x and item[1]==y:
-                item[2]="CLEAN"
-        print self.floor
+                self.floor[counter][2]="CLEAN"
+            counter+=1
 
 
     def isTileCleaned(self, m, n):
@@ -124,7 +124,7 @@ class RectangularRoom(object):
         """
         count = 0
         for item in self.floor:
-            if item[2] == "CLEAN":
+            if item[2]=="CLEAN":
                 count += 1
         return count
 
@@ -133,8 +133,8 @@ class RectangularRoom(object):
         Return a random position inside the room.
         returns: a Position object.
         """
-        x = random.uniform(0.0,3.0)
-        y = random.uniform(0.0, 3.0)
+        x = random.uniform(0.0,self.width)
+        y = random.uniform(0.0, self.height)
         pos = Position(x,y)
         return pos
 
@@ -146,23 +146,10 @@ class RectangularRoom(object):
         """
         x = pos.getX()
         y = pos.getY()
-        return x <= 3.0 and y <= 3.0 and x >= 0.0 and y >= 0.0
+        return x <= self.width and y <= self.height and x >= 0.0 and y >= 0.0
 
-rectangle = RectangularRoom(3, 3)
-print rectangle.createTiles()
-pos = Position(.7,3.4)
-rectangle.cleanTileAtPosition(pos)
-print rectangle.isTileCleaned(1,3)
-print rectangle.getNumCleanedTiles()
+
 class Robot(object):
-    """
-    Represents a robot cleaning a particular room.
-    At all times the robot has a particular position and direction in the room.
-    The robot also has a fixed speed.
-    Subclasses of Robot should provide movement strategies by implementing
-    updatePositionAndClean(), which simulates a single time-step.
-    """
-
     def __init__(self, room, speed):
         """
         Initializes a Robot with the given speed in the specified room. The
@@ -171,14 +158,18 @@ class Robot(object):
         room:  a RectangularRoom object.
         speed: a float (speed > 0)
         """
-        raise NotImplementedError
+        self.room=room
+        self.direction = int(360*random.random())
+        self.position = Position(random.uniform(0,room.width),random.uniform(0,room.height))
+        self.speed = speed
+        self.room.cleanTileAtPosition(self.position)
 
     def getRobotPosition(self):
         """
         Return the position of the robot.
         returns: a Position object giving the robot's position.
         """
-        raise NotImplementedError
+        return self.position
 
     def getRobotDirection(self):
         """
@@ -186,21 +177,21 @@ class Robot(object):
         returns: an integer d giving the direction of the robot as an angle in
         degrees, 0 <= d < 360.
         """
-        raise NotImplementedError
+        return self.direction
 
     def setRobotPosition(self, position):
         """
         Set the position of the robot to POSITION.
         position: a Position object.
         """
-        raise NotImplementedError
+        self.position = position
 
     def setRobotDirection(self, direction):
         """
         Set the direction of the robot to DIRECTION.
         direction: integer representing an angle in degrees
         """
-        raise NotImplementedError
+        self.direction = direction
 
     def updatePositionAndClean(self):
         """
@@ -225,8 +216,11 @@ class StandardRobot(Robot):
         Move the robot to a new position and mark the tile it is on as having
         been cleaned.
         """
-        raise NotImplementedError
-
+        if self.room.isPositionInRoom(self.position.getNewPosition(self.direction,self.speed)):
+            self.setRobotPosition(self.position.getNewPosition(self.direction,self.speed))
+            self.room.cleanTileAtPosition(self.position)
+        else:
+            self.direction = random.uniform(0.0,360.0)
 
 # === Problem 3
 
@@ -246,13 +240,27 @@ def runSimulation(num_robots, speed, width, height, min_coverage, num_trials,
     robot_type: class of robot to be instantiated (e.g. Robot or
                 RandomWalkRobot)
     """
-    raise NotImplementedError
+    counter = 0
+    num = num_trials
+    while num >0:
+        room = RectangularRoom(width,height)
+        i = num_robots
+        robots = []
+        while i>0:
+            robots.append(robot_type(room,speed))
+            i-=1
+        while float(min_coverage * room.getNumTiles()) > room.getNumCleanedTiles():
+            for r in robots:
+                r.updatePositionAndClean()
+                counter+=1
+        num-=1
+    return float(counter/num_trials)
 
 
 # === Problem 4
 #
 #  How long does it take to clean 80% of a 2020 room with each of 1-10 robots?
-#
+print runSimulation(2,1,10,5,.7,40,StandardRobot)
 # 2) How long does it take two robots to clean 80% of rooms with dimensions
 #	 2020, 2516, 4010, 508, 805, and 1004?
 
@@ -289,4 +297,8 @@ def showPlot3():
     """
     Produces a plot comparing the two robot strategies.
     """
-    raise NotImplementedError
+    times1 = []
+    times2 = []
+    x=[]
+    for num_robots in range(1,11):
+        times1.append(runSimulation(num_robots,))
