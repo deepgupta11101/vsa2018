@@ -5,9 +5,8 @@
 
 
 
-import numpy
+
 import random
-import pylab
 from proj10 import *
 
 #
@@ -38,6 +37,10 @@ class ResistantVirus(SimpleVirus):
         the probability of the offspring acquiring or losing resistance to a drug.        
 
         """
+        self.maxBirthProb = maxBirthProb
+        self.clearProb = clearProb
+        self.resistances = resistances
+        self.mutProb = mutProb
 
 
         # TODO
@@ -57,7 +60,7 @@ class ResistantVirus(SimpleVirus):
         """
 
         # TODO
-
+        return self.resistances(drug)
 
     def reproduce(self, popDensity, activeDrugs):
 
@@ -101,7 +104,24 @@ class ResistantVirus(SimpleVirus):
         """
         # TODO
 
-            
+        #checks to see if will die to drug
+        for item in activeDrugs:
+            if not self.isResistantTo(item):
+                raise NoChildException
+        r = random.random()
+        if r>self.maxBirthProb * (1 - popDensity):
+            raise NoChildException
+        new = self.resistances.copy()
+        for item in new:
+            r = random.random()
+            if r < self.mutProb:
+                if new[item] == False:
+                    new[item] = True
+                else:
+                    new[item] = False
+        return ResistantVirus(self.maxBirthProb,self.clearProb,new,self.mutProb)
+
+
 
 class Patient(SimplePatient):
 
@@ -121,6 +141,8 @@ class Patient(SimplePatient):
         
         maxPop: the  maximum virus population for this patient (an integer)
         """
+        self.viruses = viruses
+
         # TODO
     
 
@@ -259,5 +281,7 @@ def simulationTwoDrugsVirusPopulations():
     """
     #TODO
 
+dict1 = {'xan':"TRUE",'ibo':"FALSE"}
+print dict1['xan']
 
 
