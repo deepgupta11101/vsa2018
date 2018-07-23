@@ -142,7 +142,8 @@ class Patient(SimplePatient):
         maxPop: the  maximum virus population for this patient (an integer)
         """
         self.viruses = viruses
-
+        self.maxPop = maxPop
+        self.drugs = []
         # TODO
     
 
@@ -159,6 +160,8 @@ class Patient(SimplePatient):
         """
         # TODO
         # should not allow one drug being added to the list multiple times
+        if newDrug not in self.drugs:
+            self.drugs.append(newDrug)
 
 
     def getPrescriptions(self):
@@ -170,7 +173,7 @@ class Patient(SimplePatient):
         """
 
         # TODO
-        
+        return self.drugs
 
     def getResistPop(self, drugResist):
         """
@@ -184,6 +187,15 @@ class Patient(SimplePatient):
         drugs in the drugResist list.
         """
         # TODO
+        ret = 0
+        for virus in self.viruses:
+            count = 0
+            for drug in drugResist:
+                if virus.isResistantTo(drug):
+                    count+=1
+            if count == len(drugResist):
+                ret+=1
+        return ret
                    
 
 
@@ -206,6 +218,18 @@ class Patient(SimplePatient):
         integer)
         """
         # TODO
+        for virus in self.viruses:
+            if virus.doesClear():
+                self.viruses.remove(virus)
+            popD = float(self.getTotalPop())/float(self.maxPop)
+            try:
+                self.viruses.append(virus.reproduce(popD,self.getPrescriptions()))
+            except NoChildException:
+                continue
+        print self.getTotalPop()
+        return self.getTotalPop()
+
+
 
 
 
@@ -224,6 +248,21 @@ def simulationWithDrug():
     vs. time are plotted
     """
     # TODO
+    count = 0
+    vlist = []
+    while count < 100:
+        vlist.append(ResistantVirus(.1,.05,{drug_a:False},.005))
+        count+=1
+    pat = Patient(vlist,1000)
+    count=0
+    while count<150:
+        pat.update()
+        count+=1
+    pat.addPrescription(drug_a)
+    count =0
+    while count<150:
+        pat.update()
+        count+=1
 
 
 
