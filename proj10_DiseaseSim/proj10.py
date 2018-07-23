@@ -2,9 +2,7 @@
 # Name:
 # Date:
 
-import numpy
 import random
-import pylab
 
 ''' 
 Begin helper code
@@ -40,8 +38,8 @@ class SimpleVirus(object):
         maxBirthProb: Maximum reproduction probability (a float between 0-1)        
         clearProb: Maximum clearance probability (a float between 0-1).
         """
-
-        # TODO
+        self.maxBirthProb = maxBirthProb
+        self.clearProb = clearProb
 
     def doesClear(self):
         """ Stochastically determines whether this virus particle is cleared from the
@@ -51,6 +49,11 @@ class SimpleVirus(object):
         """
 
         # TODO
+        r = random.random()
+        if r<self.clearProb:
+            return True
+        else:
+            return False
 
     def reproduce(self, popDensity):
         """
@@ -73,6 +76,11 @@ class SimpleVirus(object):
         """
 
         # TODO
+        r = random.random()
+        if r<self.maxBirthProb * (1-popDensity):
+            return SimpleVirus(self.maxBirthProb,self.clearProb)
+        else:
+            raise NoChildException
 
 
 class SimplePatient(object):
@@ -94,6 +102,8 @@ class SimplePatient(object):
         """
 
         # TODO
+        self.viruses = viruses
+        self.maxPop = maxPop
 
     def getTotalPop(self):
         """
@@ -102,6 +112,7 @@ class SimplePatient(object):
         """
 
         # TODO
+        return len(self.viruses)
 
     def update(self):
         """
@@ -120,9 +131,16 @@ class SimplePatient(object):
         """
 
         # TODO
-
-
-#
+        for virus in self.viruses:
+            if virus.doesClear():
+                self.viruses.remove(virus)
+            popD = float(self.getTotalPop())/float(self.maxPop)
+            try:
+                self.viruses.append(virus.reproduce(popD))
+            except NoChildException:
+                continue
+        print self.getTotalPop()
+        return self.getTotalPop()
 # PROBLEM 2
 #
 def simulationWithoutDrug():
@@ -134,3 +152,25 @@ def simulationWithoutDrug():
     """
 
     # TODO
+    count = 0
+    viruses = []
+    ylist = []
+    while count <100:
+        virus = SimpleVirus(.1,.05)
+        viruses.append(virus)
+        count+=1
+    pat = SimplePatient(viruses,1000)
+    count = 0
+    while count <300:
+        pat.update()
+        ylist.append(pat.getTotalPop())
+        count+=1
+    print ylist
+
+lst = []
+for i in range(0,300):
+    lst.append(i)
+print lst
+
+simulationWithoutDrug()
+
