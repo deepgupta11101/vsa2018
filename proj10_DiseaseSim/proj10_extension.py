@@ -60,7 +60,7 @@ class ResistantVirus(SimpleVirus):
         """
 
         # TODO
-        return self.resistances(drug)
+        return self.resistances[drug]
 
     def reproduce(self, popDensity, activeDrugs):
 
@@ -104,7 +104,7 @@ class ResistantVirus(SimpleVirus):
         """
         # TODO
 
-        #checks to see if will die to drug
+        # checks to see if will react to drug
         for item in activeDrugs:
             if not self.isResistantTo(item):
                 raise NoChildException
@@ -232,7 +232,6 @@ class Patient(SimplePatient):
 
 
 
-
 #
 # PROBLEM 2
 #
@@ -248,23 +247,31 @@ def simulationWithDrug():
     vs. time are plotted
     """
     # TODO
+    ylist=[]
     count = 0
     vlist = []
     while count < 100:
-        vlist.append(ResistantVirus(.1,.05,{drug_a:False},.005))
+        vlist.append(ResistantVirus(.1,.05,{"drug_a":False},.005))
         count+=1
     pat = Patient(vlist,1000)
     count=0
     while count<150:
         pat.update()
+        ylist.append(pat.getTotalPop())
         count+=1
-    pat.addPrescription(drug_a)
+    pat.addPrescription("drug_a")
     count =0
     while count<150:
         pat.update()
+        ylist.append(pat.getTotalPop())
         count+=1
+    print ylist
 
-
+xlist=[]
+for i in range(1,301):
+    xlist.append(i)
+print xlist
+simulationWithDrug()
 
 #
 # PROBLEM 3
@@ -320,7 +327,5 @@ def simulationTwoDrugsVirusPopulations():
     """
     #TODO
 
-dict1 = {'xan':"TRUE",'ibo':"FALSE"}
-print dict1['xan']
 
 
