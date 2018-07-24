@@ -6,22 +6,31 @@
 # Tests are created for you in proj11_test.py. Uncomment tests as you need them.
 # Otherwise, you could call a function that you haven't defined yet, and you would get an error.
 #
-# sumList(lst);
+def sumList(lst):
 # Task: compute the sum of a list of integers
 # Pre: lst is an list of 'size' integers, size is nonnegative
 # Post: the sum of lst[0]...lst[size-1] is returned
 # Challenge: This function could be done by dividing the list in half and performing recursive calls on each half (as opposed to just shrinking the size by one each time).
+    if len(lst)==0:
+        return 0
+    else:
+        return lst[0]+sumList(lst[1:])
 
-
-
-# member(target, set);
+def member(target, set):
 # Task: determine if target is in the set
 # Pre: set is an list of 'size' integers, size is nonnegative
 # Post: true is returned if target is in the set, else false; the set is unchanged
+    if len(set)==0:
+        return False
+    if len(set)==1 and set[0] != target:
+        return False
+    elif set[0] == target:
+        return True
+    else:
+        return member(target,set[1:])
 
 
-
-# addStar(str);
+#def addStar(str):
 # Given a string, compute recursively a new string where all the adjacent characters are now separated by a "*".
 # Pre: str is a string (may be empty).
 # Post: a correctly starred string is returned.
@@ -32,29 +41,52 @@
 
 
 
-# harmonicSum(n);
+
+def harmonicSum(n):
 # Task: compute the sum of the first n harmonic terms
 # Pre: n is a positive integer
 # Post: the sum of the first n harmonic terms is returned.
 # The harmonic series is 1 + (1/2) + (1/3) + (1/4) + ...
+    if n==1:
+        return 1
+    elif n==0:
+        return  0
+    else:
+        return 1/float(n)+harmonicSum(n-1)
 
-
-
-# isPalindrome(str);
+def isPalindrome(str):
 # Task: determine if a string is a palindrome
 # Pre: str is a string object
 # Post: returns true if str is a palindrome, otherwise returns false
 # The test is case insensitive (user .upper() & .lower()).
 # You do not need to worry about trimming blanks from the ends of the string.
 # Note: the empty string is a palindrome
+    str=str.lower()
+    str = str.strip()
+    if len(str)<=1:
+        return True
+    elif str[0] != str[-1]:
+        return False
+    else:
+        return isPalindrome(str[1:-1])
 
 
-
-# replace(target, replacement, numbers, size);
+def replace(target, replacement, numbers, size):
 # Task: replace all occurrences of 'target' in the list 'numbers'with 'replacement'
 # Pre: 'numbers' is an list of 'size' integers, size is nonnegative
 # Post: all occurrences of 'target' in 'numbers' have been replaced  with 'replacement';
 # the number of replacements performed is returned to the caller.
+    if size==0:
+        return 0
+    elif size==1:
+        if numbers[0] == target:
+            numbers[0] = replacement
+    else:
+        if numbers[0]==target:
+            numbers[0] = replacement
+        replace(target,replacement,numbers[1:],len(numbers)-1)
+
+    return numbers.count(replacement)
 
 
 
