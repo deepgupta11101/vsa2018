@@ -30,7 +30,7 @@ def member(target, set):
         return member(target,set[1:])
 
 
-#def addStar(str):
+def addStar(str):
 # Given a string, compute recursively a new string where all the adjacent characters are now separated by a "*".
 # Pre: str is a string (may be empty).
 # Post: a correctly starred string is returned.
@@ -38,7 +38,18 @@ def member(target, set):
 # addStar("hello") --> "h*e*l*l*o"
 # addStar("abc") --> "a*b*c"
 # addStar("ab") --> "a*b"
-
+    if len(str)==0:
+        return ""
+    elif len(str)==1:
+        return str
+    str = list(str)
+    if len(str[1])>1:
+        str.append(str[0])
+        str.remove(str[0])
+        return "".join(str)
+    str.append(str[0]+"*")
+    str.remove(str[0])
+    return addStar(str)
 
 
 
@@ -76,17 +87,28 @@ def replace(target, replacement, numbers, size):
 # Pre: 'numbers' is an list of 'size' integers, size is nonnegative
 # Post: all occurrences of 'target' in 'numbers' have been replaced  with 'replacement';
 # the number of replacements performed is returned to the caller.
-    if size==0:
-        return 0
-    elif size==1:
-        if numbers[0] == target:
-            numbers[0] = replacement
+    if size==1:
+        if numbers[size-1] == target:
+            #print numbers[0],target
+            numbers[size-1] = replacement
+            return 1
+        else:
+            #print numbers[0],target
+            return 0
     else:
-        if numbers[0]==target:
-            numbers[0] = replacement
-        replace(target,replacement,numbers[1:],len(numbers)-1)
+        #print numbers[0], target
+        #print numbers
+        if numbers[size-1]==target:
+            numbers[size-1] = replacement
+            x = 1+replace(target,replacement,numbers,size-1)
+            #print x
+            return x
+        else:
+            x = replace(target, replacement, numbers, size-1)
+            #print x
+            return x
 
-    return numbers.count(replacement)
+
 
 
 
@@ -103,11 +125,24 @@ def replace(target, replacement, numbers, size):
 # Post: the GCD of x & y is returned
 
 
-
-# void reverseLst(lst, first, last);
+def reverseLst(lst, first, last):
 # Task: reverse the contents of lst[first]...lst[last]
 # Pre: 'lst' is a list of at least 'last'+1 integers, first & last are nonnegative
 # Post: the elements lst[first]...lst[last]have been reversed.
+    print lst
+    if len(lst)==0 or len(lst)==1:
+        return lst
+    elif len(lst)==2:
+        temp=lst[first]
+        lst[first]=lst[last]
+        last[last]=temp
+        return lst
+    else:
+        temp = lst[first]
+        lst[first]=lst[last]
+        lst[last]=temp
+        return reverseLst(lst,first+1,last-1)
+
 
 
 
