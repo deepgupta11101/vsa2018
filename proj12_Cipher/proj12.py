@@ -7,12 +7,14 @@
 #
 import string
 import random
-
+import math
 WORDLIST_FILENAME = "words.txt"
 
 # -----------------------------------
 # Helper code
 # (you don't need to understand this helper code)
+
+
 def load_words():
     """
     Returns a list of valid words. Words are strings of lowercase letters.
@@ -222,14 +224,7 @@ def build_decoder(shift):
     ret = build_coder(0-shift)
     return ret
 
-correct = {' ': 'x', 'A': 'Y', 'C': ' ', 'B': 'Z', 'E': 'B', 'D': 'A', 'G': 'D',
-    'F': 'C', 'I': 'F', 'H': 'E', 'K': 'H', 'J': 'G', 'M': 'J', 'L': 'I',
-    'O': 'L', 'N': 'K', 'Q': 'N', 'P': 'M', 'S': 'P', 'R': 'O', 'U': 'R',
-    'T': 'Q', 'W': 'T', 'V': 'S', 'Y': 'V', 'X': 'U', 'Z': 'W', 'a': 'y',
-    'c': ' ', 'b': 'z', 'e': 'b', 'd': 'a', 'g': 'd', 'f': 'c', 'i': 'f',
-    'h': 'e', 'k': 'h', 'j': 'g', 'm': 'j', 'l': 'i', 'o': 'l', 'n': 'k',
-    'q': 'n', 'p': 'm', 's': 'p', 'r': 'o', 'u': 'r', 't': 'q', 'w': 't',
-    'v': 's', 'y': 'v', 'x': 'u', 'z': 'w'}
+
 
 
 def apply_coder(text, coder):
@@ -302,27 +297,27 @@ def find_best_shift(wordlist, text):
     'Hello, world!'
     """
     ### TODO
-    for i in range (1,27):
+    for i in range (1,28):
         ret = apply_shift(text,-i)
-        print ret
         trial = ret
         for item in string.punctuation:
             trial=trial.replace(item,'')
-        print trial
-        trial.split()
-        if i ==8:
-            print trial
+        trial=trial.split()
         count = 0
         for word in trial:
-            if word in wordlist:
+            if is_word(wordlist,word):
                 count +=1
-        if float(count)/float(len(trial))>=.5:
-            trial = ' '.join(trial)
+        if float(count)/float(len(trial))==1:
             return ret
-    return "something went wrong"
-s = apply_shift("Hello, world!",8)
-print s
-print find_best_shift(wordlist,s)
+    print "The words in your original message were not all in my list of valid words. Please retry with another message."
+
+
+userPhrase = raw_input("What message would you like to decrypt? It must be in English, use typed numbers, and cannot use contractions.")
+shifts = int(raw_input("What number of shifts, between 1 and 26, would you like to decrypt your message with?"))
+encryptedPhrase = apply_shift(userPhrase,shifts)
+print "Your phrase after being encrypted with",shifts,"shifts is: " +encryptedPhrase+". Looks like complete gibberish, right?"
+newPhrase = find_best_shift(wordlist,encryptedPhrase)
+print "After decoding your phrase, it is now: "+ newPhrase+". Look familiar?"
 # Problem 3: Multi-level encryption.
 #
 def apply_shifts(text, shifts):
@@ -342,6 +337,10 @@ def apply_shifts(text, shifts):
     'JufYkaolfapxQdrnzmasmRyrpfdvpmEurrb?'
     """
     ### TODO.
+    counter = 0
+    ret = []
+    while counter<len(shifts):
+        sub = text[shifts[counter]]
  
 #
 # Problem 4: Multi-level decryption.
