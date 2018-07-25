@@ -124,6 +124,37 @@ def build_coder(shift):
     (The order of the key-value pairs may be different.)
     """
     ### TODO.
+    ret = {}
+    alpha = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',' ','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z',' ']
+    if shift>0:
+        for i in range (0,len(alpha)/2-1-abs(shift)):
+            ret[alpha[i]]=alpha[i+shift]
+        for i in range (len(alpha)/2,len(alpha)-1-abs(shift)):
+            ret[alpha[i]] = alpha[i+shift]
+        counter = 0
+        for i in range (len(alpha)/2-1-shift,len(alpha)/2):
+            ret[alpha[i]]=alpha[counter-1]
+            counter+=1
+        counter = len(alpha)/2
+        for i in range (len(alpha)-1-shift,len(alpha)):
+                ret[alpha[i]]=alpha[counter-1]
+                counter+=1
+    else:
+        for i in range(abs(shift),len(alpha)/2):
+            ret[alpha[i]]=alpha[i+shift]
+        for i in range(len(alpha)/2+abs(shift),len(alpha)):
+            ret[alpha[i]] = alpha[i + shift]
+        counter = len(alpha)/2-1-abs(shift)
+        for i in range(0,abs(shift)):
+            ret[alpha[i]] = alpha[counter+1]
+            counter+=1
+        counter = len(alpha)-1-abs(shift)
+        for i in range(len(alpha)/2,len(alpha)/2+abs(shift)):
+            ret[alpha[i]] = alpha[counter+1]
+            counter+=1
+    return ret
+
+
 
 def build_encoder(shift):
     """
@@ -153,6 +184,11 @@ def build_encoder(shift):
     HINT : Use build_coder.
     """
     ### TODO.
+    ret = build_coder(shift)
+    return ret
+
+
+
 
 def build_decoder(shift):
     """
@@ -183,7 +219,18 @@ def build_decoder(shift):
     HINT : Use build_coder.
     """
     ### TODO.
- 
+    ret = build_coder(0-shift)
+    return ret
+
+correct = {' ': 'x', 'A': 'Y', 'C': ' ', 'B': 'Z', 'E': 'B', 'D': 'A', 'G': 'D',
+    'F': 'C', 'I': 'F', 'H': 'E', 'K': 'H', 'J': 'G', 'M': 'J', 'L': 'I',
+    'O': 'L', 'N': 'K', 'Q': 'N', 'P': 'M', 'S': 'P', 'R': 'O', 'U': 'R',
+    'T': 'Q', 'W': 'T', 'V': 'S', 'Y': 'V', 'X': 'U', 'Z': 'W', 'a': 'y',
+    'c': ' ', 'b': 'z', 'e': 'b', 'd': 'a', 'g': 'd', 'f': 'c', 'i': 'f',
+    'h': 'e', 'k': 'h', 'j': 'g', 'm': 'j', 'l': 'i', 'o': 'l', 'n': 'k',
+    'q': 'n', 'p': 'm', 's': 'p', 'r': 'o', 'u': 'r', 't': 'q', 'w': 't',
+    'v': 's', 'y': 'v', 'x': 'u', 'z': 'w'}
+
 
 def apply_coder(text, coder):
     """
@@ -200,7 +247,18 @@ def apply_coder(text, coder):
     'Hello, world!'
     """
     ### TODO.
-  
+    alpha = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u',
+             'v', 'w', 'x', 'y', 'z', ' ', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O',
+             'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+    ret = []
+    for i in range (0,len(text)):
+        if text[i] not in alpha:
+            ret.append(text[i])
+        else:
+            ret.append(coder.get(text[i],0))
+    ret = ''.join(ret)
+    return ret
+
 
 def apply_shift(text, shift):
     """
@@ -220,7 +278,10 @@ def apply_shift(text, shift):
     'Apq hq hiham a.'
     """
     ### TODO.
-   
+    shifted = build_encoder(shift)
+    return apply_coder(text,shifted)
+
+
 #
 # Problem 2: Codebreaking.
 #
@@ -241,8 +302,27 @@ def find_best_shift(wordlist, text):
     'Hello, world!'
     """
     ### TODO
-   
-#
+    for i in range (1,27):
+        ret = apply_shift(text,-i)
+        print ret
+        trial = ret
+        for item in string.punctuation:
+            trial=trial.replace(item,'')
+        print trial
+        trial.split()
+        if i ==8:
+            print trial
+        count = 0
+        for word in trial:
+            if word in wordlist:
+                count +=1
+        if float(count)/float(len(trial))>=.5:
+            trial = ' '.join(trial)
+            return ret
+    return "something went wrong"
+s = apply_shift("Hello, world!",8)
+print s
+print find_best_shift(wordlist,s)
 # Problem 3: Multi-level encryption.
 #
 def apply_shifts(text, shifts):
