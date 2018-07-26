@@ -311,13 +311,12 @@ def find_best_shift(wordlist, text):
             return ret
     print "The words in your original message were not all in my list of valid words. Please retry with another message."
 
-
-userPhrase = raw_input("What message would you like to decrypt? It must be in English, use typed numbers, and cannot use contractions.")
-shifts = int(raw_input("What number of shifts, between 1 and 26, would you like to decrypt your message with?"))
+userPhrase = raw_input("What message would you like to encrypt? It must be in English, use typed numbers, and cannot use contractions.")
+shifts = int(raw_input("What number of shifts, between 1 and 26, would you like to encrypt your message with?"))
 encryptedPhrase = apply_shift(userPhrase,shifts)
 print "Your phrase after being encrypted with",shifts,"shifts is: " +encryptedPhrase+". Looks like complete gibberish, right?"
 newPhrase = find_best_shift(wordlist,encryptedPhrase)
-print "After decoding your phrase, it is now: "+ newPhrase+". Look familiar?"
+print "After decrypting your phrase, it is now: "+ newPhrase+". Look familiar?"
 # Problem 3: Multi-level encryption.
 #
 def apply_shifts(text, shifts):
@@ -337,10 +336,23 @@ def apply_shifts(text, shifts):
     'JufYkaolfapxQdrnzmasmRyrpfdvpmEurrb?'
     """
     ### TODO.
-    counter = 0
     ret = []
-    while counter<len(shifts):
-        sub = text[shifts[counter]]
+    for ltr in text:
+        ret.append(ltr)
+    print ret
+    for item in shifts:
+        ret[item[0]:]=(apply_shift(text[item[0]:],item[1]))
+        print ret
+    return ''.join(ret)
+
+
+print apply_shifts("Do Androids Dream of Electric Sheep?", [(0,6), (3, 18), (12, 16)])
+print apply_shift("Do Androids Dream of Electric Sheep?",6)
+print apply_shift("Do Androids Dream of Electric Sheep?",18)
+print apply_shift("Do Androids Dream of Electric Sheep?",16)
+
+
+
  
 #
 # Problem 4: Multi-level decryption.
@@ -407,7 +419,6 @@ def decrypt_fable():
 
 
 
-    
 #What is the moral of the story?
 #
 #
